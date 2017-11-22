@@ -2,7 +2,6 @@ import sys
 import socket
 import select
 
-HOST = ''
 SOCKET_LIST = []
 RECV_BUFFER = 4096  # 4 Kb
 PORT = 9009
@@ -11,7 +10,7 @@ PORT = 9009
 def chat_server():
     server_socket = socket.socket()
     server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    server_socket.bind((HOST, PORT))
+    server_socket.bind(('', PORT))
     server_socket.listen(10)
 
     # add server socket object to the list of readable connections
@@ -20,10 +19,14 @@ def chat_server():
     print("Chat server started on port " + str(PORT))
 
     while True:
-        # get the list sockets which are ready to be read through select 4th arg
-        # time_out  = 0 : poll and never block
+        # get the list sockets which are ready to be read
+        # through select 4th arg time_out  = 0 : poll and never block
 
         # !! the select() itself is a blocking call (waiting for I/O completion)
+
+        # The select() function monitors all client sockets and  server socket
+        # for readable activity. If any of the client socket is readable
+        # then it means that one of the chat client has send a message
         ready_to_read, ready_to_write, in_error = select.select(
             SOCKET_LIST,  # potential_readers that we might want to try reading
             [],           # potential_writers we might want to try writing to
@@ -36,14 +39,15 @@ def chat_server():
             if sock == server_socket:
                 sockfd, addr = server_socket.accept()
                 SOCKET_LIST.append(sockfd)
-                print("Client (%s, %s) connected" % addr)
+                print("Client (%s, %s) connected" % (sockfd, addr))
                 broadcast(
                     server_socket, sockfd,
-                    "[%s:%s] entered our chatting room\n" % addr
+                    "[%s:%s] entered our chatting room\n" % (sockfd, addr)
                 )
+
             # a message from a client, not a new connection
             else:
-                # process data received from client,
+                # process data received from client
                 try:
                     # receiving data from the socket
                     data = sock.recv(RECV_BUFFER)
