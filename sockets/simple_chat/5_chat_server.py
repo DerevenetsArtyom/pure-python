@@ -8,6 +8,13 @@ PORT = 9009
 
 
 def chat_server():
+    """
+    In the code, we're dealing with two cases:
+
+    * If master socket is readable, the server would accept the new connection.
+    * If any of client socket is readable, the server would read the message,
+    and broadcast it back to all clients except the one who send the message.
+    """
     server_socket = socket.socket()
     server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server_socket.bind(('', PORT))
@@ -24,9 +31,10 @@ def chat_server():
 
         # !! the select() itself is a blocking call (waiting for I/O completion)
 
-        # The select() function monitors all client sockets and  server socket
-        # for readable activity. If any of the client socket is readable
-        # then it means that one of the chat client has send a message
+        # The select() function monitors all client sockets
+        # and server socket for readable activity.
+        # If any of the client socket is readable then it means that
+        # one of the chat client has send a message.
         ready_to_read, ready_to_write, in_error = select.select(
             SOCKET_LIST,  # potential_readers that we might want to try reading
             [],           # potential_writers we might want to try writing to
@@ -66,12 +74,12 @@ def chat_server():
                         broadcast(
                             server_socket, sock,
                             "Client (%s, %s) is offline\n" % addr
-                        )
+                        )  # TODO fix formatting
                 except:
                     broadcast(
                         server_socket, sock,
                         "Client (%s, %s) is offline\n" % addr
-                    )
+                    )  # TODO fix formatting
                     continue
     server_socket.close()
 
