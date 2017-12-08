@@ -1,27 +1,21 @@
-# Tested with Python 2.7.9, Linux & Mac OS X
 import socket
-import StringIO
+from io import StringIO
 import sys
 
 
-class WSGIServer(object):
-
-    address_family = socket.AF_INET
-    socket_type = socket.SOCK_STREAM
-    request_queue_size = 1
+class WSGIServer:
 
     def __init__(self, server_address):
         # Create a listening socket
-        self.listen_socket = listen_socket = socket.socket(
-            self.address_family,
-            self.socket_type
-        )
+        self.listen_socket = listen_socket = socket.socket()
+
         # Allow to reuse the same address
         listen_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        # Bind
-        listen_socket.bind(server_address)
-        # Activate
-        listen_socket.listen(self.request_queue_size)
+
+        listen_socket.bind(server_address)  # Bind
+
+        listen_socket.listen(1)  # Activate
+
         # Get server host name and port
         host, port = self.listen_socket.getsockname()[:2]
         self.server_name = socket.getfqdn(host)
@@ -71,19 +65,20 @@ class WSGIServer(object):
          ) = request_line.split()
 
     def get_environ(self):
-        env = {}
+        env = dict()
         # The following code snippet does not follow PEP8 conventions
         # but it's formatted the way it is for demonstration purposes
         # to emphasize the required variables and their values
-        #
+
         # Required WSGI variables
         env['wsgi.version']      = (1, 0)
         env['wsgi.url_scheme']   = 'http'
-        env['wsgi.input']        = StringIO.StringIO(self.request_data)
+        env['wsgi.input']        = StringIO(self.request_data)
         env['wsgi.errors']       = sys.stderr
         env['wsgi.multithread']  = False
         env['wsgi.multiprocess'] = False
         env['wsgi.run_once']     = False
+
         # Required CGI variables
         env['REQUEST_METHOD']    = self.request_method    # GET
         env['PATH_INFO']         = self.path              # /hello
@@ -99,7 +94,7 @@ class WSGIServer(object):
         ]
         self.headers_set = [status, response_headers + server_headers]
         # To adhere to WSGI specification the start_response must return
-        # a 'write' callable. We simplicity's sake we'll ignore that detail
+        # a 'write' callable. For simplicity's sake we'll ignore that detail
         # for now.
         # return self.finish_response
 
@@ -136,7 +131,9 @@ if __name__ == '__main__':
         sys.exit('Provide a WSGI application object as module:callable')
     app_path = sys.argv[1]
     module, application = app_path.split(':')
+    print('module before', module)
     module = __import__(module)
+    print('module after', module)
     application = getattr(module, application)
     httpd = make_server(SERVER_ADDRESS, application)
     print('WSGIServer: Serving HTTP on port {port} ...\n'.format(port=PORT))
