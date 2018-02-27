@@ -12,7 +12,7 @@ class WSGIServer:
         # Allow to reuse the same address
         listen_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-        listen_socket.bind(server_address)  # Bind
+        listen_socket.bind(server_address)
 
         listen_socket.listen(1)  # Activate
 
@@ -27,23 +27,22 @@ class WSGIServer:
         self.application = application
 
     def serve_forever(self):
-        listen_socket = self.listen_socket
         while True:
             # New client connection
-            self.client_connection, client_address = listen_socket.accept()
-            # Handle one request and close the client connection. Then
-            # loop over to wait for another client connection
+            self.client_socket, client_address = self.listen_socket.accept()
+            # Handle one request and close the client connection.
+            # Then loop over to wait for another client connection
             self.handle_one_request()
 
     def handle_one_request(self):
-        self.request_data = request_data = self.client_connection.recv(1024)
+        self.request_data = self.client_socket.recv(1024).decode()
         # Print formatted request data a la 'curl -v'
         print(''.join(
             '< {line}\n'.format(line=line)
-            for line in request_data.splitlines()
+            for line in self.request_data.splitlines()
         ))
 
-        self.parse_request(request_data)
+        self.parse_request(self.request_data)
 
         # Construct environment dictionary using request data
         env = self.get_environ()
@@ -56,13 +55,11 @@ class WSGIServer:
         self.finish_response(result)
 
     def parse_request(self, text):
-        request_line = text.splitlines()[0]
-        request_line = request_line.rstrip('\r\n')
+        # GET /hello HTTP/1.1
+        request_line = text.splitlines()[0].rstrip('\r\n')
         # Break down the request line into components
-        (self.request_method,  # GET
-         self.path,            # /hello
-         self.request_version  # HTTP/1.1
-         ) = request_line.split()
+        components = request_line.split()  # ['GET', '/hello', 'HTTP/1.1']
+        self.request_method, self.path, self.request_version = components
 
     def get_environ(self):
         env = dict()
@@ -86,7 +83,7 @@ class WSGIServer:
         env['SERVER_PORT']       = str(self.server_port)  # 8888
         return env
 
-    def start_response(self, status, response_headers, exc_info=None):
+    def start_response(self, status, response_headers):
         # Add necessary server headers
         server_headers = [
             ('Date', 'Tue, 31 Mar 2015 12:54:48 GMT'),
@@ -106,15 +103,15 @@ class WSGIServer:
                 response += '{0}: {1}\r\n'.format(*header)
             response += '\r\n'
             for data in result:
-                response += data
+                response += data.decode()
             # Print formatted response data a la 'curl -v'
             print(''.join(
                 '> {line}\n'.format(line=line)
                 for line in response.splitlines()
             ))
-            self.client_connection.sendall(response)
+            self.client_socket.sendall(response.encode())
         finally:
-            self.client_connection.close()
+            self.client_socket.close()
 
 
 SERVER_ADDRESS = (HOST, PORT) = '', 8888
@@ -131,9 +128,7 @@ if __name__ == '__main__':
         sys.exit('Provide a WSGI application object as module:callable')
     app_path = sys.argv[1]
     module, application = app_path.split(':')
-    print('module before', module)
     module = __import__(module)
-    print('module after', module)
     application = getattr(module, application)
     httpd = make_server(SERVER_ADDRESS, application)
     print('WSGIServer: Serving HTTP on port {port} ...\n'.format(port=PORT))
