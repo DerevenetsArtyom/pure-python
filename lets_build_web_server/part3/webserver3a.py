@@ -32,5 +32,6 @@ def serve_forever():
         handle_request(client_connection)
         client_connection.close()
 
+
 if __name__ == '__main__':
     serve_forever()

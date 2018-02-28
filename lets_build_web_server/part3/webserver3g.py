@@ -36,10 +36,10 @@ def handle_request(client_connection):
     request = client_connection.recv(1024)
     print(request.decode())
     http_response = b"""\
-HTTP/1.1 200 OK
-
-Hello, World!
-"""
+        HTTP/1.1 200 OK
+        
+        Hello, World!
+    """
     client_connection.sendall(http_response)
 
 
@@ -71,6 +71,7 @@ def serve_forever():
             os._exit(0)
         else:  # parent
             client_connection.close()  # close parent copy and loop over
+
 
 if __name__ == '__main__':
     serve_forever()

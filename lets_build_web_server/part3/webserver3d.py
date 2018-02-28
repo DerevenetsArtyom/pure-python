@@ -24,10 +24,10 @@ REQUEST_QUEUE_SIZE = 5
 def handle_request(client_connection):
     request = client_connection.recv(1024)
     http_response = b"""\
-HTTP/1.1 200 OK
+        HTTP/1.1 200 OK
 
-Hello, World!
-"""
+        Hello, World!
+    """
     client_connection.sendall(http_response)
 
 
@@ -53,6 +53,7 @@ def serve_forever():
         else:  # parent
             # client_connection.close()
             print(len(clients))
+
 
 if __name__ == '__main__':
     serve_forever()

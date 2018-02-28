@@ -16,10 +16,10 @@ def handle_request(client_connection):
     request = client_connection.recv(1024)
     print(request.decode())
     http_response = b"""\
-HTTP/1.1 200 OK
+        HTTP/1.1 200 OK
 
-Hello, World!
-"""
+        Hello, World!
+    """
     client_connection.sendall(http_response)
     time.sleep(60)  # sleep and block the process for 60 seconds
 
@@ -35,6 +35,7 @@ def serve_forever():
         client_connection, client_address = listen_socket.accept()
         handle_request(client_connection)
         client_connection.close()
+
 
 if __name__ == '__main__':
     serve_forever()

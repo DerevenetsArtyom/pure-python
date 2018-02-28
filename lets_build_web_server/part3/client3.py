@@ -11,9 +11,8 @@ import socket
 
 SERVER_ADDRESS = 'localhost', 8888
 REQUEST = b"""\
-GET /hello HTTP/1.1
-Host: localhost:8888
-
+    GET /hello HTTP/1.1
+    Host: localhost:8888
 """
 
 
