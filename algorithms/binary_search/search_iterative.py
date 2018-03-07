@@ -3,6 +3,7 @@
 
 
 def binary_search_iterative(arr, item):
+    """Array should be sorted!!!"""
     first = 0
     last = len(arr) - 1
 
