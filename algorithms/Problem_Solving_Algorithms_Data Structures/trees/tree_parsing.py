@@ -1,8 +1,8 @@
 """ Simple implementation of syntax parsing tree """
+import operator
 
 
-# Helper structure
-class Stack:
+class PoorStack:
     def __init__(self):
         self.lst = []
 
@@ -11,15 +11,6 @@ class Stack:
 
     def pop(self):
         return self.lst.pop()
-
-    def peek(self):
-        return self.lst[-1]
-
-    def is_empty(self):
-        return self.lst == []
-
-    def size(self):
-        return len(self.lst)
 
 
 class BinaryTree:
@@ -65,41 +56,68 @@ def build_parse_tree(expression: str):
     RIGHT_BRACKET = ')'
     OPERATORS = ['+', '-', '*', '/']
 
-    tokens_list = expression.split()
-    stack = Stack()  # need stack to traverse tree, move up and down
+    # Stack is needed to traverse tree:
+    # .push -> 'move down / deeper' to the tree
+    # .pop -> 'move up' to the tree
+    stack = PoorStack()
     tree = BinaryTree('')
 
     stack.push(tree)
     current_tree = tree
+    tokens_list = expression.split()
 
     for token in tokens_list:
         if token == LEFT_BRACKET:
             current_tree.insert_left('')  # add new tree to left side
             stack.push(current_tree)
             current_tree = current_tree.get_left_child()
+
         elif token.isdigit():
-            current_tree.set_root_value(token)
+            current_tree.set_root_value(int(token))
             current_tree = stack.pop()  # move to the parent node
+
         elif token in OPERATORS:
             current_tree.set_root_value(token)
             current_tree.insert_right('')  # add new tree to right side
             stack.push(current_tree)
             current_tree = current_tree.get_right_child()
+
         elif token == RIGHT_BRACKET:
             current_tree = stack.pop()
+
         else:
             raise ValueError
-
     return tree
 
 
-pt = build_parse_tree("( ( 10 + 5 ) * 3 )")
+def evaluate(parse_tree: BinaryTree) -> int:
+    operators = {
+        '+': operator.add,
+        '-': operator.sub,
+        '*': operator.mul,
+        '/': operator.truediv,
+    }
 
-print(pt.get_root_value())
-print(pt.get_left_child().get_root_value())
-print(pt.get_right_child().get_root_value())
+    left_child = parse_tree.get_left_child()
+    right_child = parse_tree.get_right_child()
+
+    if all((left_child, right_child)):
+        operat_str = parse_tree.get_root_value()  # should be operator as string
+        operat_func = operators[operat_str]
+        return operat_func(evaluate(left_child), evaluate(right_child))
+    else:
+        return parse_tree.get_root_value()
 
 
+if __name__ == '__main__':
+    expr1 = "( ( 10 + 5 ) * 3 )"
+    expr2 = "( 3 + ( 4 * 5 ) )"
 
+    print(expr1)
+    pt = build_parse_tree(expr1)
+    print(evaluate(pt))
+    print()
 
-
+    print(expr2)
+    pt = build_parse_tree(expr2)
+    print(evaluate(pt))
