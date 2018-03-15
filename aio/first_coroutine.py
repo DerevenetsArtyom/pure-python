@@ -2,6 +2,7 @@ import asyncio
 import os
 import urllib.request
 
+
 async def download_coroutine(url):
     """Сопрограмма для загрузки данных по указанному url"""
     request = urllib.request.urlopen(url)
