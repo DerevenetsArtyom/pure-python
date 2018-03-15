@@ -56,3 +56,10 @@ def postorder(tree):
         postorder(tree.right_child)
         print(tree.root)
 
+
+def inorder(tree):
+    """Симметричный обход"""
+    if tree:
+        inorder(tree.left_child)
+        print(tree.root)
+        inorder(tree.right_child)
