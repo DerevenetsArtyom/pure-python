@@ -28,14 +28,14 @@ class BinaryTree:
             self.right_child = binary_tree  # assign created tree as right child
 
 
-def build_parse_tree(expression: str):
+def build_parse_tree(expression: str) -> BinaryTree:
     LEFT_BRACKET = '('
     RIGHT_BRACKET = ')'
     OPERATORS = ('+', '-', '*', '/', )
 
-    # Stack as a list is needed to traverse tree:
-    # .append (.push) -> 'move down / deeper' to the tree
-    # .pop -> 'move up' to the tree
+    # Stack as a list is needed to traverse the tree:
+    #   .append (~.push) -> 'move down (deeper)' to the tree
+    #   .pop -> 'move up' to the tree
     stack = list()
     tree = BinaryTree('')
 
@@ -45,13 +45,13 @@ def build_parse_tree(expression: str):
 
     for token in tokens_list:
         if token == LEFT_BRACKET:
-            current_tree.insert_left('')  # add new tree to left side
+            current_tree.insert_left('')  # add new node to left side
             stack.append(current_tree)
             current_tree = current_tree.left_child
 
         elif token.isdigit():
-            current_tree.root = (int(token))
-            current_tree = stack.pop()  # move to the parent node
+            current_tree.root = int(token)
+            current_tree = stack.pop()  # move 'up', to the parent node
 
         elif token in OPERATORS:
             current_tree.root = token
@@ -77,13 +77,14 @@ def evaluate(parse_tree: BinaryTree) -> int:
 
     left_child = parse_tree.left_child
     right_child = parse_tree.right_child
+    root = parse_tree.root
 
     if left_child and right_child:
-        operat_str = parse_tree.root  # should be operator as string
+        operat_str = root  # should be operator as string
         operat_func = operators[operat_str]
         return operat_func(evaluate(left_child), evaluate(right_child))
     else:
-        return parse_tree.root
+        return root
 
 
 if __name__ == '__main__':
