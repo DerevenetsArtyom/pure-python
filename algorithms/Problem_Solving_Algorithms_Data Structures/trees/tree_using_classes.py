@@ -47,3 +47,12 @@ def preorder(tree: BinaryTree):
         print(tree.root)
         preorder(tree.left_child)
         preorder(tree.right_child)
+
+
+def postorder(tree):
+    """Обход в обратном порядке"""
+    if tree:
+        postorder(tree.left_child)
+        postorder(tree.right_child)
+        print(tree.root)
+
