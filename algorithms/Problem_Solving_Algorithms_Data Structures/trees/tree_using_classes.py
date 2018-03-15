@@ -23,30 +23,3 @@ class BinaryTree:
             binary_tree.right_child = self.right_child  # move existing node
             self.right_child = binary_tree  # assign created tree as right child
 
-    def get_root_value(self):
-        return self.root
-
-    def set_root_value(self, new_val):
-        self.root = new_val
-
-    def get_left_child(self):
-        return self.left_child
-
-    def get_right_child(self):
-        return self.right_child
-
-
-r = BinaryTree('a')
-print(r.get_root_value())  # 'a'
-print(r.get_right_child())  # should be None
-
-r.insert_left('b')
-print(r.get_left_child())
-print(r.get_left_child().get_root_value())  # 'b'
-
-r.insert_right('c')
-print(r.get_right_child())
-print(r.get_right_child().get_root_value())  # 'c'
-
-r.get_right_child().set_root_value('hello')
-print(r.get_right_child().get_root_value())  # 'hello'
