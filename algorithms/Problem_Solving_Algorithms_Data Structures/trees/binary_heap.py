@@ -1,8 +1,10 @@
 class BinaryHeap:
     """Min-heap"""
+    root_index = 1
+
     def __init__(self):
         self.heap_list = [0]  # initial 0 is needed for correct division
-        self.size = 0  # length except first '0'
+        self.size = 0  # represents length minus first '0'
 
     def _move_up(self, i):
         """Takes last element and try to move it up"""
@@ -23,23 +25,29 @@ class BinaryHeap:
         self.size += 1
         self._move_up(self.size)
 
-    def _min_child(self, i):
-        if i * 2 + 1 > self.size:
-            return i * 2
+    def _min_child(self, i: int) -> int:
+        left_ch_indx = i * 2
+        right_ch_indx = i * 2 + 1
+
+        if right_ch_indx > self.size:  # no right child
+            return left_ch_indx
         else:
-            if self.heap_list[i * 2] < self.heap_list[i * 2 + 1]:
-                return i * 2
+            # find smallest child and it's index
+            if self.heap_list[left_ch_indx] < self.heap_list[right_ch_indx]:
+                return left_ch_indx
             else:
-                return i * 2 + 1
+                return right_ch_indx
 
     def _move_down(self, i):
-        """Чтобы поддержать свойство упорядоченности, надо поменять местами
-        корень с меньшим, чем он, потомком.
-        После начальной перестановки можно повторять процесс для узла и его
-        потомков до тех пор, пока он не переместится на позицию,
-        в которой будет меньше обоих своих детей"""
+        """
+        Swap root with smaller child while it won't be smaller than both childs.
+        """
+        # i * 2     - represents index of left child
+        # i * 2 + 1 - represents index of right child
         while (i * 2) <= self.size:
+            # find index of min child (left or right child)
             min_child_indx = self._min_child(i)
+
             if self.heap_list[i] > self.heap_list[min_child_indx]:
                 tmp = self.heap_list[i]
                 self.heap_list[i] = self.heap_list[min_child_indx]
@@ -47,7 +55,7 @@ class BinaryHeap:
             i = min_child_indx
 
     def del_min(self):
-        old_root = self.heap_list[1]
+        old_root = self.heap_list[self.root_index]
         last_element = self.heap_list[-1]  # or self.heapList[self.currentSize]
 
         # move last element to the top to support heap's structure property
