@@ -23,6 +23,28 @@ class BinaryHeap:
         self.size += 1
         self._move_up(self.size)
 
+    def _min_child(self, i):
+        if i * 2 + 1 > self.size:
+            return i * 2
+        else:
+            if self.heap_list[i * 2] < self.heap_list[i * 2 + 1]:
+                return i * 2
+            else:
+                return i * 2 + 1
+
+    def _move_down(self, i):
+        """Чтобы поддержать свойство упорядоченности, надо поменять местами
+        корень с меньшим, чем он, потомком.
+        После начальной перестановки можно повторять процесс для узла и его
+        потомков до тех пор, пока он не переместится на позицию,
+        в которой будет меньше обоих своих детей"""
+        while (i * 2) <= self.size:
+            min_child_indx = self._min_child(i)
+            if self.heap_list[i] > self.heap_list[min_child_indx]:
+                tmp = self.heap_list[i]
+                self.heap_list[i] = self.heap_list[min_child_indx]
+                self.heap_list[min_child_indx] = tmp
+            i = min_child_indx
 
     def del_min(self):
         old_root = self.heap_list[1]
@@ -38,10 +60,6 @@ class BinaryHeap:
         return old_root
 
 
-
-
-
-
 bh = BinaryHeap()
 bh.insert(5)
 bh.insert(7)
@@ -52,27 +70,8 @@ bh.insert(6)
 
 print(bh.heap_list)
 
+bh.del_min()
+print(bh.heap_list)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# print(bh.delMin())
-# print(bh.delMin())
-# print(bh.delMin())
-# print(bh.delMin())
+bh.del_min()
+print(bh.heap_list)
