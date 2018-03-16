@@ -38,10 +38,12 @@ class BinaryHeap:
             else:
                 return right_ch_indx
 
-    def _move_down(self, i):
+    def _move_root_down(self):
         """
-        Swap root with smaller child while it won't be smaller than both childs.
+        Swap root with smaller child while it won't be smaller than both childs
         """
+        i = self.root_index
+
         # i * 2     - represents index of left child
         # i * 2 + 1 - represents index of right child
         while (i * 2) <= self.size:
@@ -56,15 +58,16 @@ class BinaryHeap:
 
     def del_min(self):
         old_root = self.heap_list[self.root_index]
-        last_element = self.heap_list[-1]  # or self.heapList[self.currentSize]
+        last_element = self.heap_list.pop()
 
         # move last element to the top to support heap's structure property
-        self.heap_list[1] = last_element
-        self.heap_list.pop()  # TODO assign to last element
+        self.heap_list[self.root_index] = last_element
         self.size -= 1
 
-        # try to return property of orderliness, cause it broken
-        self._move_down(1)
+        # restore property of orderliness,
+        # cause it was broken by inserting new root
+        self._move_root_down()
+
         return old_root
 
 
