@@ -1,5 +1,5 @@
-#  Time Complexity of Solution:
-#  Best O(n); Average O(n^2); Worst O(n^2).
+# Time Complexity of Solution:
+# Best O(n); Average O(n^2); Worst O(n^2).
 #
 # Approach:
 # Insertion sort is good for collections that are very small or nearly sorted.

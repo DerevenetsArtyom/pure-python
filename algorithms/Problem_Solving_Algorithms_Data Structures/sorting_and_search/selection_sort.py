@@ -1,6 +1,6 @@
 def selection_sort(arr):
     """Sort the mutable sequence seq in place and return it."""
-    for right_index in reversed(range(len(arr))):
+    for right_index in range(len(arr) - 1, 0, -1):
         index_of_max = 0
         # Find the index of greatest item in seq[:i+1].
         for i in range(1, right_index + 1):
