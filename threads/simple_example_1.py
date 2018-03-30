@@ -35,3 +35,8 @@ def in_parallel():
 
     # Should be 4 sec, the same as argument of sleep
     print('General time taken:', time.time() - start)
+
+
+if __name__ == '__main__':
+    one_by_one()
+    # in_parallel()
