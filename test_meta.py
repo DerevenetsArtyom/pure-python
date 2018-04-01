@@ -26,3 +26,5 @@ class MyClass1(metaclass=meta_function):
         """
         print('MyClass1.__init__({}, *{}, **{})'.format(self, args, kwargs))
 
+
+a = MyClass1(1, 2, 3, x='ex', y='why')
