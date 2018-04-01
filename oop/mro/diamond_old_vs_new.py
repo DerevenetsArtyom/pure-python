@@ -19,12 +19,13 @@ def mro_resolution():
 
 if __name__ == '__main__':
     if sys.version_info.major == 2:
-        print('Version #2. Old-style classes')
-        print('  MRO: D - B - A - C - A (in-depth)')
+        print('Version #2. Old-style classes: Depth-First-Left algorithm')
+        print('Algorithm not monotonic and sometimes shows anomalous behavior')
+        print('  MRO: D - B - A - C - (A)')
         mro_resolution()  # 'a'
 
     if sys.version_info.major == 3:
-        print('Version #3. New-style classes')
+        print('Version #3. New-style classes: C3 Linearization Algorithm')
         print('  MRO: D -> B -> C -> A -> object')
         print()
         mro_resolution()  # 'c'
